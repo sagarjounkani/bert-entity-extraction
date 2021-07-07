@@ -47,8 +47,8 @@ def process_data(data_path, enc_tag, fit=False):
 
 if __name__ == "__main__":
     enc_tag = preprocessing.LabelEncoder()
-    sentences, tag, enc_tag = process_data(config.TRAINING_FILE, enc_tag, fit=True)
-    sentences_dev, tag_dev, _ = process_data(config.TRAINING_FILE, enc_tag, fit=False)
+    train_sentences, train_tag, enc_tag = process_data(config.TRAINING_FILE, enc_tag, fit=True)
+    dev_sentences, dev_tag, _ = process_data(config.TRAINING_FILE, enc_tag, fit=False)
 
     meta_data = {
         "enc_tag": enc_tag
@@ -66,7 +66,7 @@ if __name__ == "__main__":
     # ) = model_selection.train_test_split(sentences, tag, random_state=42, test_size=0.1)
 
     train_dataset = dataset.EntityDataset(
-        texts=sentences, tags=tag
+        texts=train_sentences, tags=train_tag
     )
 
     train_data_loader = torch.utils.data.DataLoader(
@@ -74,7 +74,7 @@ if __name__ == "__main__":
     )
 
     valid_dataset = dataset.EntityDataset(
-        texts=sentences_dev, tags=tag_dev
+        texts=dev_sentences, tags=dev_tag
     )
 
     valid_data_loader = torch.utils.data.DataLoader(
