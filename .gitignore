@@ -3,3 +3,4 @@ input/
 *.bin
 *.csv
 *.jpg
+*.pyc

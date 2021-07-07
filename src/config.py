@@ -9,6 +9,8 @@ EPOCHS = 10
 BASE_MODEL_PATH = "bert-base-uncased"
 MODEL_PATH = "model.bin"
 TRAINING_FILE = "../data/addressTaggedBIO.train"
+TEST_FILE = "../data/addressTaggedBIO.test"
+DECODED_FILE = "../data/decode.out"
 TOKENIZER = transformers.BertTokenizer.from_pretrained(
     BASE_MODEL_PATH,
     do_lower_case=True

@@ -16,9 +16,9 @@ import engine
 from model import EntityModel
 
 
-def process_data(data_path):
+def load_data_bio(data_path):
     sentences = []
-    tag = []
+    tags = []
     with open(data_path, 'r') as f:
         lines = f.readlines()
         s = []
@@ -30,19 +30,24 @@ def process_data(data_path):
                 t.append(parts[1])
             else:
                 sentences.append(s)
-                tag.append(t)
+                tags.append(t)
                 s = []
                 t = []
-    enc_tag = preprocessing.LabelEncoder()
-    enc_tag.fit([item for sublist in tag for item in sublist])
-    tag = [enc_tag.transform(sublist) for sublist in tag]
+    return sentences, tags
 
-    return sentences, tag, enc_tag
+
+def process_data(data_path):
+    sentences, tags = load_data_bio(data_path)
+    enc_tag = preprocessing.LabelEncoder()
+    enc_tag.fit([item for sublist in tags for item in sublist])
+    tags = [enc_tag.transform(sublist) for sublist in tags]
+
+    return sentences, tags, enc_tag
 
 
 if __name__ == "__main__":
     sentences, tag, enc_tag = process_data(config.TRAINING_FILE)
-    
+
     meta_data = {
         "enc_tag": enc_tag
     }
