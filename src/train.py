@@ -74,9 +74,8 @@ if __name__ == "__main__":
         valid_dataset, batch_size=config.VALID_BATCH_SIZE, num_workers=1
     )
 
-    device = torch.device("cpu")
     model = EntityModel(num_tag=num_tag)
-    model.to(device)
+    model.to(config.DEVICE)
 
     param_optimizer = list(model.named_parameters())
     no_decay = ["bias", "LayerNorm.bias", "LayerNorm.weight"]
