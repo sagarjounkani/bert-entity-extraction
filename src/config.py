@@ -8,8 +8,9 @@ VALID_BATCH_SIZE = 8
 EPOCHS = 10
 BASE_MODEL_PATH = "bert-base-uncased"
 MODEL_PATH = "model.bin"
-TRAINING_FILE = "../data/addressTaggedBIO.train"
-TEST_FILE = "../data/addressTaggedBIO.test"
+TRAINING_FILE = "../data/sampleAddressTaggedBIO.train"
+DEV_FILE = "../data/sampleAddressTaggedBIO.dev"
+TEST_FILE = "../data/sampleAddressTaggedBIO.test"
 DECODED_FILE = "../data/decode.out"
 TOKENIZER = transformers.BertTokenizer.from_pretrained(
     BASE_MODEL_PATH,

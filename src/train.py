@@ -36,17 +36,19 @@ def load_data_bio(data_path):
     return sentences, tags
 
 
-def process_data(data_path):
+def process_data(data_path, enc_tag, fit=False):
     sentences, tags = load_data_bio(data_path)
-    enc_tag = preprocessing.LabelEncoder()
-    enc_tag.fit([item for sublist in tags for item in sublist])
+    if fit:
+        enc_tag.fit([item for sublist in tags for item in sublist])
     tags = [enc_tag.transform(sublist) for sublist in tags]
 
     return sentences, tags, enc_tag
 
 
 if __name__ == "__main__":
-    sentences, tag, enc_tag = process_data(config.TRAINING_FILE)
+    enc_tag = preprocessing.LabelEncoder()
+    sentences, tag, enc_tag = process_data(config.TRAINING_FILE, enc_tag, fit=True)
+    sentences_dev, tag_dev, _ = process_data(config.TRAINING_FILE, enc_tag, fit=False)
 
     meta_data = {
         "enc_tag": enc_tag
@@ -56,15 +58,15 @@ if __name__ == "__main__":
 
     num_tag = len(list(enc_tag.classes_))
 
-    (
-        train_sentences,
-        test_sentences,
-        train_tag,
-        test_tag
-    ) = model_selection.train_test_split(sentences, tag, random_state=42, test_size=0.1)
+    # (
+    #     train_sentences,
+    #     test_sentences,
+    #     train_tag,
+    #     test_tag
+    # ) = model_selection.train_test_split(sentences, tag, random_state=42, test_size=0.1)
 
     train_dataset = dataset.EntityDataset(
-        texts=train_sentences, tags=train_tag
+        texts=sentences, tags=tag
     )
 
     train_data_loader = torch.utils.data.DataLoader(
@@ -72,7 +74,7 @@ if __name__ == "__main__":
     )
 
     valid_dataset = dataset.EntityDataset(
-        texts=test_sentences, tags=test_tag
+        texts=sentences_dev, tags=tag_dev
     )
 
     valid_data_loader = torch.utils.data.DataLoader(

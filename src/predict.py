@@ -8,7 +8,7 @@ import dataset
 import engine
 from tqdm import tqdm
 from model import EntityModel
-from train import load_data_bio
+from train import process_data
 
 
 def convert_to_original_length(tokens, tags):
@@ -31,8 +31,7 @@ if __name__ == "__main__":
 
     num_tag = len(list(enc_tag.classes_))
 
-    sentences, tags = load_data_bio(config.TEST_FILE)
-    tags = [enc_tag.transform(sublist) for sublist in tags]
+    sentences, tags, _ = process_data(config.TEST_FILE, enc_tag, fit=False)
 
     test_dataset = dataset.EntityDataset(
         texts=sentences,
