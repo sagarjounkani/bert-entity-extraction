@@ -38,7 +38,7 @@ if __name__ == "__main__":
         data = test_dataset[0]
         for k, v in data.items():
             data[k] = v.to(config.DEVICE).unsqueeze(0)
-        tag, pos, _ = model(**data)
+        tag, _ = model(**data)
 
         print(
             enc_tag.inverse_transform(
