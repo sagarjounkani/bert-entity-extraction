@@ -102,8 +102,8 @@ if __name__ == "__main__":
 
     best_loss = np.inf
     for epoch in range(config.EPOCHS):
-        train_loss = engine.train_fn(train_data_loader, model, optimizer, device, scheduler)
-        test_loss = engine.eval_fn(valid_data_loader, model, device)
+        train_loss = engine.train_fn(train_data_loader, model, optimizer, config.DEVICE, scheduler)
+        test_loss = engine.eval_fn(valid_data_loader, model, config.DEVICE)
         print(f"Train Loss = {train_loss} Valid Loss = {test_loss}")
         if test_loss < best_loss:
             torch.save(model.state_dict(), config.MODEL_PATH)
