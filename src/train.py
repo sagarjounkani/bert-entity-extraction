@@ -48,7 +48,7 @@ def process_data(data_path, enc_tag, fit=False):
 if __name__ == "__main__":
     enc_tag = preprocessing.LabelEncoder()
     train_sentences, train_tag, enc_tag = process_data(config.TRAINING_FILE, enc_tag, fit=True)
-    dev_sentences, dev_tag, _ = process_data(config.TRAINING_FILE, enc_tag, fit=False)
+    dev_sentences, dev_tag, _ = process_data(config.DEV_FILE, enc_tag, fit=False)
 
     meta_data = {
         "enc_tag": enc_tag
