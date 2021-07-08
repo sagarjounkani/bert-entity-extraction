@@ -13,7 +13,7 @@ from transformers import get_linear_schedule_with_warmup
 import config
 import dataset
 import engine
-from model import EntityModel
+from model_def import EntityModel
 
 
 def load_data_bio(data_path):
@@ -54,16 +54,9 @@ if __name__ == "__main__":
         "enc_tag": enc_tag
     }
 
-    joblib.dump(meta_data, "meta.bin")
+    joblib.dump(meta_data, config.METADATA_PATH)
 
     num_tag = len(list(enc_tag.classes_))
-
-    # (
-    #     train_sentences,
-    #     test_sentences,
-    #     train_tag,
-    #     test_tag
-    # ) = model_selection.train_test_split(sentences, tag, random_state=42, test_size=0.1)
 
     train_dataset = dataset.EntityDataset(
         texts=train_sentences, tags=train_tag

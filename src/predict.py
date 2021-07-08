@@ -26,7 +26,7 @@ def convert_to_original_length(tokens, tags):
 
 if __name__ == "__main__":
 
-    meta_data = joblib.load("meta.bin")
+    meta_data = joblib.load(config.METADATA_PATH)
     enc_tag = meta_data["enc_tag"]
 
     num_tag = len(list(enc_tag.classes_))
