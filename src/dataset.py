@@ -1,4 +1,4 @@
-import config
+from .config import *
 import torch
 
 
@@ -20,7 +20,7 @@ class EntityDataset:
         target_tag =[]
 
         for i, s in enumerate(text):
-            inputs = config.TOKENIZER.encode(
+            inputs = TOKENIZER.encode(
                 s,
                 add_special_tokens=False
             )
@@ -29,8 +29,8 @@ class EntityDataset:
             ids.extend(inputs)
             target_tag.extend([tags[i]] * input_len)
 
-        ids = ids[:config.MAX_LEN - 2]
-        target_tag = target_tag[:config.MAX_LEN - 2]
+        ids = ids[:MAX_LEN - 2]
+        target_tag = target_tag[:MAX_LEN - 2]
 
         ids = [101] + ids + [102]
         target_tag = [0] + target_tag + [0]
@@ -38,7 +38,7 @@ class EntityDataset:
         mask = [1] * len(ids)
         token_type_ids = [0] * len(ids)
 
-        padding_len = config.MAX_LEN - len(ids)
+        padding_len = MAX_LEN - len(ids)
 
         ids = ids + ([0] * padding_len)
         mask = mask + ([0] * padding_len)
