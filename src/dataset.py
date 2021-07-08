@@ -51,3 +51,5 @@ class EntityDataset:
             "token_type_ids": torch.tensor(token_type_ids, dtype=torch.long),
             "target_tag": torch.tensor(target_tag, dtype=torch.long),
         }
+
+

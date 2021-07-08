@@ -5,7 +5,7 @@ import torch
 import transformers
 from tqdm import tqdm
 
-import dataset
+from .dataset import EntityDataset
 from common_utils.address_cleaner import AddressCleaner
 from .model import EntityModel
 from .utils import createOutputContainer
@@ -46,7 +46,7 @@ class BertTagger:
     def getPred(self, input: str) -> Dict[str, List]:
         cleanedAddressTokens = self.addressCleaner([input])[0].split()
 
-        test_dataset = dataset.EntityDataset(
+        test_dataset = EntityDataset(
             texts=[cleanedAddressTokens],
             tags=[self.enc_tag.transform(['O'] * len(cleanedAddressTokens))]
         )
@@ -75,7 +75,7 @@ class BertTagger:
         out = []
         cleanedAddressTokens = [address.split() for address in self.addressCleaner(input)]
 
-        test_dataset = dataset.EntityDataset(
+        test_dataset = EntityDataset(
             texts=cleanedAddressTokens,
             tags=[self.enc_tag.transform(['O'] * len(address)) for address in cleanedAddressTokens]
         )
