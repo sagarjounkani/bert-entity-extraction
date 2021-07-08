@@ -1,18 +1,14 @@
-import numpy as np
+from typing import List, Dict
 
 import joblib
 import torch
-
-import dataset
-import engine
 import transformers
 from tqdm import tqdm
-from model_def import EntityModel
-from train import process_data
+
+import dataset
 from common_utils.address_cleaner import AddressCleaner
-from utils_bert import createOutputContainer
-from typing import List, Dict
-from collections import defaultdict
+from .model import EntityModel
+from .utils import createOutputContainer
 
 
 def convert_to_original_length(tokens, tags):
@@ -45,6 +41,7 @@ class BertTagger:
         else:
             self.model.load_state_dict(torch.load(model_location))
         self.model.to(self.device)
+        self.model.eval()
 
     def getPred(self, input: str) -> Dict[str, List]:
         cleanedAddressTokens = self.addressCleaner([input])[0].split()
@@ -74,9 +71,52 @@ class BertTagger:
         ac = AddressCleaner(samples)
         return ac.clean(tqdm_disable=True)
 
+    def getBatchPred(self, input:List[str], batchSize=2) -> List[Dict[str, List]]:
+        out = []
+        cleanedAddressTokens = [address.split() for address in self.addressCleaner(input)]
+
+        test_dataset = dataset.EntityDataset(
+            texts=cleanedAddressTokens,
+            tags=[self.enc_tag.transform(['O'] * len(address)) for address in cleanedAddressTokens]
+        )
+
+        test_data_loader = torch.utils.data.DataLoader(
+            test_dataset, batch_size=batchSize, num_workers=1
+        )
+
+        for idx, data in tqdm(enumerate(test_data_loader), total=len(test_data_loader),
+                              desc='Predicting tags for each address ...'):
+            for k, v in data.items():
+                data[k] = v.to(self.device)
+            tag, _ = self.model(**data)
+
+            tokenizedAddressBatch = [self.tokenizer.convert_ids_to_tokens(ids, skip_special_tokens=True)
+                                     for ids in data['ids']]
+
+            decodedTagIds = tag.argmax(2).cpu().numpy()
+            decodedTags = [self.enc_tag.inverse_transform(ids)[1:len(address)+1]
+                           for address, ids in zip(tokenizedAddressBatch, decodedTagIds)]
+
+            decodedTags_compressed = [convert_to_original_length(address, tags)
+                                      for address, tags in zip(tokenizedAddressBatch, decodedTags)]
+
+            addressBatch = cleanedAddressTokens[idx * batchSize: (idx + 1) * batchSize]
+
+            out = [createOutputContainer(toks, tags)
+                   for toks, tags in zip(addressBatch, decodedTags_compressed)]
+
+        return out
+
 
 if __name__ == "__main__":
     bertTagger = BertTagger()
     bertTagger.loadModel(model_location='../model/model.bin', meta_location='../model/meta.bin')
+
+    print(bertTagger.getBatchPred([
+        "Wilson Manor Apartments, Wilson Garden 13th cross ,Bengaluru ,(Safa Medicure Hospital) Bangalore - ,Karnataka",
+        "Wilson Manor Apartments, Wilson Garden 13th cross ,Bengaluru ,(Safa Medicure Hospital) Bangalore - ,Karnataka"
+    ]))
+
     print(bertTagger.getPred(
-        "Wilson Manor Apartments, Wilson Garden 13th cross ,Bengaluru ,(Safa Medicure Hospital) Bangalore - ,Karnataka"))
+        "Wilson Manor Apartments, Wilson Garden 13th cross ,Bengaluru ,(Safa Medicure Hospital) Bangalore - ,Karnataka"
+    ))

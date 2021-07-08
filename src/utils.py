@@ -88,10 +88,10 @@ class AddressCleaner:
 
 def createOutputContainer(tokens, tags):
     tagToKey = {'STATE': 'STATE',
-                 'LOC': 'LOCALITY',
-                 'CITY': 'CITY',
-                 'PIN': 'PINCODE',
-                 'PREM': 'PREMISES'}
+                'LOC': 'LOCALITY',
+                'CITY': 'CITY',
+                'PIN': 'PINCODE',
+                'PREM': 'PREMISES'}
 
     tempComponent = ''
     currentKey = ''
@@ -125,6 +125,35 @@ def createOutputContainer(tokens, tags):
         out[tagToKey[currentKey]].append(tempComponent)
 
     return dict(out)
+
+
+def load_data_bio(data_path):
+    sentences = []
+    tags = []
+    with open(data_path, 'r') as f:
+        lines = f.readlines()
+        s = []
+        t = []
+        for line in lines:
+            if line != '\n':
+                parts = line.split()
+                s.append(parts[0])
+                t.append(parts[1])
+            else:
+                sentences.append(s)
+                tags.append(t)
+                s = []
+                t = []
+    return sentences, tags
+
+
+def process_data(data_path, enc_tag, fit=False):
+    sentences, tags = load_data_bio(data_path)
+    if fit:
+        enc_tag.fit([item for sublist in tags for item in sublist])
+    tags = [enc_tag.transform(sublist) for sublist in tags]
+
+    return sentences, tags, enc_tag
 
 
 if __name__ == '__main__':

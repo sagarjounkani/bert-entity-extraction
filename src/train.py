@@ -13,37 +13,8 @@ from transformers import get_linear_schedule_with_warmup
 import config
 import dataset
 import engine
-from model_def import EntityModel
-
-
-def load_data_bio(data_path):
-    sentences = []
-    tags = []
-    with open(data_path, 'r') as f:
-        lines = f.readlines()
-        s = []
-        t = []
-        for line in lines:
-            if line != '\n':
-                parts = line.split()
-                s.append(parts[0])
-                t.append(parts[1])
-            else:
-                sentences.append(s)
-                tags.append(t)
-                s = []
-                t = []
-    return sentences, tags
-
-
-def process_data(data_path, enc_tag, fit=False):
-    sentences, tags = load_data_bio(data_path)
-    if fit:
-        enc_tag.fit([item for sublist in tags for item in sublist])
-    tags = [enc_tag.transform(sublist) for sublist in tags]
-
-    return sentences, tags, enc_tag
-
+from .model import EntityModel
+from .utils import process_data
 
 if __name__ == "__main__":
     enc_tag = preprocessing.LabelEncoder()
