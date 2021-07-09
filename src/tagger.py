@@ -102,8 +102,8 @@ class BertTagger:
 
             addressBatch = cleanedAddressTokens[idx * batchSize: (idx + 1) * batchSize]
 
-            out = [createOutputContainer(toks, tags)
-                   for toks, tags in zip(addressBatch, decodedTags_compressed)]
+            out.extend([createOutputContainer(toks, tags)
+                        for toks, tags in zip(addressBatch, decodedTags_compressed)])
 
         return out
 
